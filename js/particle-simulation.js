@@ -4,8 +4,6 @@
 const CDN_BASE = 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three';
 
 import * as THREE from `${CDN_BASE}/build/three.webgpu.js`;
-import { Inspector } from `${CDN_BASE}/examples/jsm/inspector/Inspector.js`;
-import { OrbitControls } from `${CDN_BASE}/examples/jsm/controls/OrbitControls.js`;
 import { HDRLoader } from `${CDN_BASE}/examples/jsm/loaders/HDRLoader.js`;
 import { GLTFLoader } from `${CDN_BASE}/examples/jsm/loaders/GLTFLoader.js`;
 import * as BufferGeometryUtils from `${CDN_BASE}/examples/jsm/utils/BufferGeometryUtils.js`;
@@ -76,10 +74,6 @@ async function loadParticlePositions() {
   cubePositions = cubeData;
   conePositions = coneData;
   monkeyPositions = monkeyData;
-
-  console.log(
-    `Loaded: ${cubePositions.length} cube, ${conePositions.length} cone, ${monkeyPositions.length} monkey particles`
-  );
 }
 
 // Update morphing progress
@@ -142,7 +136,6 @@ function updateModels() {
 function startMorph() {
   morphProgress = 0;
   nextShapeIndex = (currentShapeIndex + 1) % 3;
-  console.log(`Morphing from shape ${currentShapeIndex} to ${nextShapeIndex}`);
 }
 
 function normalizePosition(pos) {
@@ -188,8 +181,6 @@ async function loadModels() {
   [monitorModel, mobileModel, vrModel].forEach((model, modelIndex) => {
     model.traverse((child) => {
       if (child.isMesh) {
-        console.log('Mesh:', child.name, 'Material:', child.material.name, 'Emissive:', child.material.emissive);
-        
         child.castShadow = true;
         child.receiveShadow = true;
         
@@ -259,11 +250,9 @@ async function loadModels() {
       child.layers.set(1);
     });
   });
-
-  console.log("3D models loaded successfully");
 }
 
-let renderer, scene, camera, controls, composer;
+let renderer, scene, camera;
 
 const clock = new THREE.Clock();
 
@@ -322,7 +311,6 @@ async function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.00;
-  renderer.inspector = new Inspector();
   renderer.shadowMap.enabled = true;
   renderer.setClearColor(0x000000, 0);
   
@@ -523,10 +511,6 @@ function setupBuffers() {
   const rangeY = globalMaxY - globalMinY;
   const rangeZ = globalMaxZ - globalMinZ;
   globalMaxRange = Math.max(rangeX, rangeY, rangeZ);
-
-  console.log(
-    `Combined bounding box: X[${globalMinX}, ${globalMaxX}] Y[${globalMinY}, ${globalMaxY}] Z[${globalMinZ}, ${globalMaxZ}]`
-  );
 
   for (let i = 0; i < particlesToUse; i++) {
     const pos = sourcePositions[i];
@@ -1165,10 +1149,6 @@ async function render() {
     mouseForceUniform.value.multiplyScalar(10.0 / mouseForceLength);
   }
   prevMouseCoord.copy(mouseCoord);
-
-  if (window.debugSphere) {
-    window.debugSphere.position.copy(mouseCoord);
-  }
 
   renderer.compute(clearGridKernel);
   renderer.compute(p2g1Kernel);
