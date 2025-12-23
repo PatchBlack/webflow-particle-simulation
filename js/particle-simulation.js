@@ -386,13 +386,13 @@ async function init() {
 
   // Device-responsive camera positioning
   if (window.innerWidth < 480) {
-    camera.position.set(0.5, 0.5, -9);
+    camera.position.set(0.4, 0.5, -9);
   } else if (window.innerWidth < 768) {
-    camera.position.set(0.5, 0.5, -8);
+    camera.position.set(0.4, 0.5, -8);
   } else if (window.innerWidth < 1024) {
-    camera.position.set(0.5, 0.5, -7);
+    camera.position.set(0.4, 0.5, -6);
   } else {
-    camera.position.set(0.5, 0.5, -6);
+    camera.position.set(0.4, 0.5, -5);
   }
 
   camera.rotation.set(0, Math.PI, 0);
