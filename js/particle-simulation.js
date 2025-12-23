@@ -1,14 +1,12 @@
 // Three.js WebGPU Particle Simulation for Webflow
 // GitHub: PatchBlack/webflow-particle-simulation
 
-const CDN_BASE = 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three';
-
-import * as THREE from `${CDN_BASE}/build/three.webgpu.js`;
-import { HDRLoader } from `${CDN_BASE}/examples/jsm/loaders/HDRLoader.js`;
-import { GLTFLoader } from `${CDN_BASE}/examples/jsm/loaders/GLTFLoader.js`;
-import * as BufferGeometryUtils from `${CDN_BASE}/examples/jsm/utils/BufferGeometryUtils.js`;
-import WebGPU from `${CDN_BASE}/examples/jsm/capabilities/WebGPU.js`;
-import { RenderTarget } from `${CDN_BASE}/build/three.webgpu.js`;
+import * as THREE from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/build/three.webgpu.js';
+import { HDRLoader } from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/examples/jsm/loaders/HDRLoader.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/examples/jsm/loaders/GLTFLoader.js';
+import * as BufferGeometryUtils from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/examples/jsm/utils/BufferGeometryUtils.js';
+import WebGPU from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/examples/jsm/capabilities/WebGPU.js';
+import { RenderTarget } from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/build/three.webgpu.js';
 
 import {
   Fn,
@@ -40,10 +38,10 @@ import {
   uv,
   vec2,
   texture,
-} from `${CDN_BASE}/build/three.tsl.js`;
+} from 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main/three/build/three.tsl.js';
 
 // Base CDN URL for assets
-const ASSET_BASE_URL = 'https://cdn.jsdelivr.net/gh/PatchBlack/webflow-particle-simulation@main';
+const ASSET_BASE_URL = 'https://cdn.jsdelivr.net/gh/PatchBalck/webflow-particle-simulation@main';
 
 // Particle position data for morphing
 let cubePositions, conePositions, monkeyPositions;
