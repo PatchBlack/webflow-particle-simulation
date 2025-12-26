@@ -63,10 +63,27 @@ function deg(degrees) {
 
 // Load particle positions
 async function loadParticlePositions() {
+  const totalAssets = 7; // 3 particles + 3 models + 1 HDR
+  let loadedAssets = 0;
+
+  function updateProgress() {
+    loadedAssets++;
+    const progress = (loadedAssets / totalAssets) * 100;
+    window.dispatchEvent(new CustomEvent('particleLoadProgress', { 
+      detail: { progress, loaded: loadedAssets, total: totalAssets }
+    }));
+  }
+
   const [cubeData, coneData, monkeyData] = await Promise.all([
-    fetch(`${ASSET_BASE_URL}/assets/particles/monitor-particle.json`).then((r) => r.json()),
-    fetch(`${ASSET_BASE_URL}/assets/particles/phone-particle.json`).then((r) => r.json()),
-    fetch(`${ASSET_BASE_URL}/assets/particles/vr-particle.json`).then((r) => r.json()),
+    fetch(`${ASSET_BASE_URL}/assets/particles/monitor-particle.json`)
+      .then((r) => r.json())
+      .then(data => { updateProgress(); return data; }),
+    fetch(`${ASSET_BASE_URL}/assets/particles/phone-particle.json`)
+      .then((r) => r.json())
+      .then(data => { updateProgress(); return data; }),
+    fetch(`${ASSET_BASE_URL}/assets/particles/vr-particle.json`)
+      .then((r) => r.json())
+      .then(data => { updateProgress(); return data; }),
   ]);
 
   cubePositions = cubeData;
@@ -146,14 +163,28 @@ function normalizePosition(pos) {
 
 // Load 3D models
 async function loadModels() {
+  function updateProgress() {
+    const event = new CustomEvent('particleLoadProgress', { 
+      detail: { progress: 0, loaded: 0, total: 0 }
+    });
+    window.dispatchEvent(event);
+  }
+
   const hdrLoader = new HDRLoader();
-  const envMap = await hdrLoader.loadAsync(`${ASSET_BASE_URL}/assets/textures/royal_esplanade_1k.hdr`);
+  const envMap = await hdrLoader.loadAsync(`${ASSET_BASE_URL}/assets/textures/royal_esplanade_1k.hdr`)
+    .then(map => {
+      updateProgress();
+      return map;
+    });
   envMap.mapping = THREE.EquirectangularReflectionMapping;
 
   const [monitorGltf, mobileGltf, vrGltf] = await Promise.all([
-    modelLoader.loadAsync(`${ASSET_BASE_URL}/assets/models/monitor.glb`),
-    modelLoader.loadAsync(`${ASSET_BASE_URL}/assets/models/mobile.glb`),
-    modelLoader.loadAsync(`${ASSET_BASE_URL}/assets/models/vr-glass.glb`),
+    modelLoader.loadAsync(`${ASSET_BASE_URL}/assets/models/monitor.glb`)
+      .then(gltf => { updateProgress(); return gltf; }),
+    modelLoader.loadAsync(`${ASSET_BASE_URL}/assets/models/mobile.glb`)
+      .then(gltf => { updateProgress(); return gltf; }),
+    modelLoader.loadAsync(`${ASSET_BASE_URL}/assets/models/vr-glass.glb`)
+      .then(gltf => { updateProgress(); return gltf; }),
   ]);
 
   const monitorContainer = new THREE.Group();
@@ -255,7 +286,7 @@ let renderer, scene, camera;
 const clock = new THREE.Clock();
 
 const maxParticles = 8192 * 16;
-const gridSize1d = 48;
+const gridSize1d = 64;
 const gridSize = new THREE.Vector3(gridSize1d, gridSize1d, gridSize1d);
 const fixedPointMultiplier = 1e7;
 
@@ -283,7 +314,7 @@ if (WebGPU.isAvailable() === false) {
 }
 
 const params = {
-  particleCount: 40000,
+  particleCount: 60000,
   gravity: 0,
   turbulenceStrength: 1,
   turbulenceFreq: 40,
@@ -386,13 +417,13 @@ async function init() {
 
   // Device-responsive camera positioning
   if (window.innerWidth < 480) {
-    camera.position.set(0.4, 0.5, -9);
+    camera.position.set(0.5, 0.5, -9);
   } else if (window.innerWidth < 768) {
-    camera.position.set(0.4, 0.5, -8);
+    camera.position.set(0.5, 0.5, -8);
   } else if (window.innerWidth < 1024) {
-    camera.position.set(0.4, 0.5, -6);
+    camera.position.set(0.5, 0.5, -7);
   } else {
-    camera.position.set(0.4, 0.5, -5);
+    camera.position.set(0.5, 0.5, -6);
   }
 
   camera.rotation.set(0, Math.PI, 0);
@@ -471,6 +502,9 @@ async function init() {
   window.addEventListener("resize", onWindowResize);
 
   renderer.setAnimationLoop(render);
+  
+  // Dispatch loading complete event
+  window.dispatchEvent(new CustomEvent('particleLoadComplete'));
 }
 
 function setupBuffers() {
